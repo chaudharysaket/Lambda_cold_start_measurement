@@ -1,0 +1,59 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Transform: AWS::Serverless-2016-10-31
+Description: A SAM template to create Golang Lambda functions with ARM and AMD architectures.
+
+Resources:
+  # Golang Lambda for ARM Architecture
+  ColdStartComputationGolangLambdaARM:
+    Type: AWS::Serverless::Function
+    Properties:
+      FunctionName: ColdStartComputationGolangLambdaARM
+      Handler: bootstrap     
+      Runtime: provided.al2023     
+      CodeUri: ./go-arm-src  
+      MemorySize: 128
+      Timeout: 10
+      Architectures:
+        - arm64          
+      Role: !GetAtt LambdaExecutionRole.Arn
+    Metadata:
+      BuildMethod: makefile
+
+  # Golang Lambda for AMD Architecture (x86_64)
+  ColdStartComputationGolangLambdaAMD:
+    Type: AWS::Serverless::Function
+    Properties:
+      FunctionName: ColdStartComputationGolangLambdaAMD
+      Handler: bootstrap     
+      Runtime: provided.al2023     
+      CodeUri: ./go-amd-src  
+      MemorySize: 128
+      Timeout: 10
+      Architectures:
+        - x86_64         
+      Role: !GetAtt LambdaExecutionRole.Arn
+    Metadata:
+      BuildMethod: makefile
+
+  LambdaExecutionRole:
+    Type: AWS::IAM::Role
+    Properties: 
+      RoleName: ColdStartComputationLambdasExecutionRole
+      AssumeRolePolicyDocument:
+        Version: '2012-10-17'
+        Statement:
+          - Effect: Allow
+            Principal:
+              Service: lambda.amazonaws.com
+            Action: sts:AssumeRole
+      Policies:
+        - PolicyName: LambdaPolicy
+          PolicyDocument:
+            Version: '2012-10-17'
+            Statement:
+              - Effect: Allow
+                Action:
+                  - logs:CreateLogGroup
+                  - logs:CreateLogStream
+                  - logs:PutLogEvents
+                Resource: arn:aws:logs:*:*:*
