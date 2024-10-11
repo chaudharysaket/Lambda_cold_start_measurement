@@ -2,13 +2,17 @@ import boto3
 import time
 import json
 
-# Initialize boto3 clients
-lambda_client = boto3.client('lambda')
-
 # Variables
-LAMBDA_FUNCTION_NAME = 'go-lambda'
+LAMBDA_FUNCTION_NAME = 'NR_EXTENSION_TEST_LAMBDA_x86_64_python312'
 COUNTER = 0
+REGION = 'us-west-2'
 MAX_INVOCATIONS = 100
+SLEEP_TIME_FOR_INVOCATION = 1
+
+# Initialize boto3 clients
+lambda_client = boto3.client('lambda', region_name=REGION)
+
+
 
 # Function to invoke Lambda
 def invoke_lambda(function_name, counter):
@@ -57,6 +61,6 @@ while COUNTER < MAX_INVOCATIONS:
     COUNTER += 1
     
     # Wait for 1 second before next iteration
-    time.sleep(5)
+    time.sleep(SLEEP_TIME_FOR_INVOCATION)
 
 print(f"Process completed. Lambda function invoked {MAX_INVOCATIONS} times.")
